@@ -157,3 +157,4 @@ if __name__ == '__main__':
                     mult=4)
     y = model(Variable(torch.randn(1, 3, 224, 224)))
     print(y.size())
+
