@@ -108,7 +108,7 @@ class iRevNet(nn.Module):
                                         mult=mult, haar=haar)
 
     def irevnet_stack(self, _block, nChannels, nBlocks, nStrides, dropout_rate,
-                      affineBN, in_ch, mult):
+                      affineBN, in_ch, mult, haar):
         """ Create stack of irevnet blocks """
         block_list = nn.ModuleList()
         strides = []
@@ -120,7 +120,7 @@ class iRevNet(nn.Module):
             block_list.append(_block(in_ch, channel, stride,
                                      first=self.first,
                                      dropout_rate=dropout_rate,
-                                     affineBN=affineBN, mult=mult))
+                                     affineBN=affineBN, mult=mult, haar=haar))
             in_ch = 2 * channel
             self.first = False
         return block_list
