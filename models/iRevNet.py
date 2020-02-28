@@ -30,16 +30,16 @@ class irevnet_block(nn.Module):
             print('')
         layers = []
         if not first:
-            layers.append(nn.BatchNorm2d(in_ch//2, affine=affineBN))
+            layers.append(nn.BatchNorm2d(in_ch//2, affine=affineBN, track_running_stats = False))
             layers.append(nn.ReLU(inplace=True))
         layers.append(nn.Conv2d(in_ch//2, int(out_ch//mult), kernel_size=3,
                       stride=stride, padding=1, bias=False))
-        layers.append(nn.BatchNorm2d(int(out_ch//mult), affine=affineBN))
+        layers.append(nn.BatchNorm2d(int(out_ch//mult), affine=affineBN, track_running_stats = False))
         layers.append(nn.ReLU(inplace=True))
         layers.append(nn.Conv2d(int(out_ch//mult), int(out_ch//mult),
                       kernel_size=3, padding=1, bias=False))
         layers.append(nn.Dropout(p=dropout_rate))
-        layers.append(nn.BatchNorm2d(int(out_ch//mult), affine=affineBN))
+        layers.append(nn.BatchNorm2d(int(out_ch//mult), affine=affineBN), track_running_stats = False))
         layers.append(nn.ReLU(inplace=True))
         layers.append(nn.Conv2d(int(out_ch//mult), out_ch, kernel_size=3,
                       padding=1, bias=False))
@@ -101,7 +101,7 @@ class iRevNet(nn.Module):
                                         nStrides, dropout_rate=dropout_rate,
                                         affineBN=affineBN, in_ch=self.in_ch,
                                         mult=mult)
-        self.bn1 = nn.BatchNorm2d(nChannels[-1]*2, momentum=0.9)
+        self.bn1 = nn.BatchNorm2d(nChannels[-1]*2, momentum=0.9, track_running_stats = False)
         self.linear = nn.Linear(nChannels[-1]*2, nClasses)
 
     def irevnet_stack(self, _block, nChannels, nBlocks, nStrides, dropout_rate,
