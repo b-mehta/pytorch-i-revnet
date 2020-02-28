@@ -10,20 +10,21 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-from .model_utils import split, merge, injective_pad, haar_psi
-psi = haar_psi
-
+from .model_utils import split, merge, injective_pad, psi, haar_psi
 
 class irevnet_block(nn.Module):
     def __init__(self, in_ch, out_ch, stride=1, first=False, dropout_rate=0.,
-                 affineBN=True, mult=4):
+                 affineBN=True, mult=4, haar=False):
         """ buid invertible bottleneck block """
         super(irevnet_block, self).__init__()
         self.first = first
         self.pad = 2 * out_ch - in_ch
         self.stride = stride
         self.inj_pad = injective_pad(self.pad)
-        self.psi = psi(stride)
+        if haar:
+            self.psi = haar_psi(stride)
+        else:
+            self.psi = psi(stride)
         if self.pad != 0 and stride == 1:
             in_ch = out_ch * 2
             print('')
@@ -83,7 +84,7 @@ class irevnet_block(nn.Module):
 
 class iRevNet(nn.Module):
     def __init__(self, nBlocks, nStrides, nClasses, nChannels=None, init_ds=2,
-                 dropout_rate=0., affineBN=True, in_shape=None, mult=4):
+                 dropout_rate=0., affineBN=True, in_shape=None, mult=4, haar=False):
         super(iRevNet, self).__init__()
         self.ds = in_shape[2]//2**(nStrides.count(2)+init_ds//2)
         self.init_ds = init_ds
@@ -97,11 +98,14 @@ class iRevNet(nn.Module):
             nChannels = [self.in_ch//2, self.in_ch//2 * 4,
                          self.in_ch//2 * 4**2, self.in_ch//2 * 4**3]
 
-        self.init_psi = psi(self.init_ds)
+        if haar:
+            self.init_psi = haar_psi(self.init_ds)
+        else:
+            self.init_psi = psi(self.init_ds)
         self.stack = self.irevnet_stack(irevnet_block, nChannels, nBlocks,
                                         nStrides, dropout_rate=dropout_rate,
                                         affineBN=affineBN, in_ch=self.in_ch,
-                                        mult=mult)
+                                        mult=mult, haar=haar)
 
     def irevnet_stack(self, _block, nChannels, nBlocks, nStrides, dropout_rate,
                       affineBN, in_ch, mult):
