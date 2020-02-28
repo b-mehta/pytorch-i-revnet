@@ -10,7 +10,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-from .model_utils import split, merge, injective_pad, psi
+from .model_utils import split, merge, injective_pad, haar_psi
+psi = haar_psi
 
 
 class irevnet_block(nn.Module):
