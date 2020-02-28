@@ -72,7 +72,7 @@ class haar_psi(psi):
         bl, bl_sq = self.block_size, self.block_size_sq
         bs, d, new_h, new_w = inpt.shape[0], inpt.shape[1], inpt.shape[2] // bl, inpt.shape[3] // bl
         four = inpt.view(bs, d, new_h, bl, new_w, bl).permute(0, 3, 5, 1, 2, 4).reshape(bs, bl_sq, d, new_h, new_w)
-        haar = torch.zeros(four.shape)
+        haar = torch.empty_like(four)
         haar[:,0] = four[:,0] + four[:,1] + four[:,2] + four[:,3]
         haar[:,1] = four[:,0] + four[:,1] - four[:,2] - four[:,3]
         haar[:,2] = four[:,0] - four[:,1] - four[:,2] + four[:,3]
@@ -84,7 +84,7 @@ class haar_psi(psi):
         bs, d_height, new_height, new_width = outp.size()
         d = d_height // bl_sq
         thing = outp.view(bs, bl_sq, d, new_height, new_width)
-        four = torch.zeros(thing.shape)
+        four = torch.empty_like(thing)
         four[:,0] = (thing[:,0] + thing[:,1] + thing[:,2] + thing[:,3])/4
         four[:,1] = (thing[:,0] + thing[:,1] - thing[:,2] - thing[:,3])/4
         four[:,2] = (thing[:,0] - thing[:,1] - thing[:,2] + thing[:,3])/4
