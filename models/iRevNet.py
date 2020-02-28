@@ -39,7 +39,7 @@ class irevnet_block(nn.Module):
         layers.append(nn.Conv2d(int(out_ch//mult), int(out_ch//mult),
                       kernel_size=3, padding=1, bias=False))
         layers.append(nn.Dropout(p=dropout_rate))
-        layers.append(nn.BatchNorm2d(int(out_ch//mult), affine=affineBN), track_running_stats = False))
+        layers.append(nn.BatchNorm2d(int(out_ch//mult), affine=affineBN, track_running_stats = False))
         layers.append(nn.ReLU(inplace=True))
         layers.append(nn.Conv2d(int(out_ch//mult), out_ch, kernel_size=3,
                       padding=1, bias=False))
